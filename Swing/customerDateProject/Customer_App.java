@@ -6,10 +6,14 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.Arrays;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -18,10 +22,15 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-import javax.swing.SwingConstants;
-import javax.swing.JComboBox;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.RowFilter;
+import javax.swing.SwingConstants;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 public class Customer_App {
 
@@ -36,6 +45,7 @@ public class Customer_App {
 	private JTextField phone;
 	private JTextField age;
 	private JTextField birthday;
+	private JTextField search;
 
 	/**
 	 * Launch the application.
@@ -64,11 +74,75 @@ public class Customer_App {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		// MySQL Ä¿½ºÅÍ¸Ó°¡ ÇÊ¿äÇÏ´Ï±ñ °´Ã¼ »ı¼º
+		Customer customer = new Customer();
 		frame = new JFrame();
 		frame.getContentPane().setLayout(null);
 		ImagePanel welcomePanel = new ImagePanel(new ImageIcon("C:/Help_JAVA/Lesson/image/welcome.jpg").getImage());
 		welcomePanel.setBounds(0, 0, 634, 376);
 		frame.setSize(welcomePanel.getWidth(), welcomePanel.getHeight());
+		// Å×ÀÌºí ¸¸µå´Â ¹æ¹ı 2Â÷ ¹è¿­ (µ¥ÀÌÅÍ, ÇØ´õ)
+		String[][] data = customer.getCustomers();
+		String[] headers = new String[] {"Name", "Phone", "Gender", "Age", "Note"};
+		
+		JPanel tablePanel = new JPanel();
+		tablePanel.setBounds(0, 0, 634, 376);
+		tablePanel.setVisible(false);
+		tablePanel.setLayout(null);
+		JTable table = new JTable(data, headers);
+		// °¢ Å×ÀÌºí Ä­ »çÀÌÁî
+		table.setRowHeight(30);
+		// ±ÛÀÚ Å©±â ¹× º¼µå
+		table.setFont(new Font("Sanserif", Font.BOLD, 15));
+		// ±ÛÀÚ Á¤·Ä
+		table.setAlignmentX(0);
+		// Å×ÀÌºí »çÀÌÁî
+		table.setSize(570, 200);
+		table.setPreferredScrollableViewportSize(new Dimension(570, 200));
+		
+		// ½ºÅ©·ÑÀ» Ãß°¡
+		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane.setBounds(22, 73, 589, 228);
+		tablePanel.add(scrollPane);
+		frame.getContentPane().add(tablePanel);
+		
+		// ¼­Ä¡ ÇÒ ¼ö ÀÖ´Â °÷
+		search = new JTextField();
+		search.setBounds(22, 34, 589, 29);
+		tablePanel.add(search);
+		search.setColumns(10);
+		
+		// tablePanel btnBack
+		JButton btnBack = new JButton("Back");
+		btnBack.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				tablePanel.setVisible(false);
+				mainPanel.setVisible(true);
+			}
+			
+		});
+		
+		
+		btnBack.setFont(new Font("Arial", Font.BOLD, 18));
+		btnBack.setBounds(459, 311, 151, 44);
+		tablePanel.add(btnBack);
+		// ¼­Ä¡ ÀÌº¥Æ® ¹ß»ı
+		search.addKeyListener(new KeyAdapter() {
+			// Å°º¸µå¿¡¼­ ´­·¶´Ù ¶®À» ¶§
+			public void keyReleased(KeyEvent e) {
+				String val = search.getText();
+				// Å×ÀÌºí Á¤¸®
+				TableRowSorter<TableModel> trs = new TableRowSorter<>(table.getModel());
+				table.setRowSorter(trs);
+				// ½ºÆ®¸µ °ª Á¤¸®
+				trs.setRowFilter(RowFilter.regexFilter(val));
+			}
+		});
+		
+		// ¿­ÀÇ Å©±â Á¶Àı		
+		TableColumnModel columnModels = table.getColumnModel();
 		
 		mainPanel = new JPanel();
 		mainPanel.setBackground(Color.WHITE);
@@ -151,8 +225,11 @@ public class Customer_App {
 		
 		JTextArea note = new JTextArea();
 		note.setBounds(406, 202, 172, 95);
+		// TextArea Å×µÎ¸® ¼± ¸¸µé±â
+		note.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		mainPanel.add(note);
 		
+		// ·Î±×ÀÎ ÈÄ submit ¹öÆ° À§Ä¡
 		JButton btnNewButton = new JButton("Submit");
 		btnNewButton.addActionListener(new ActionListener() {
 
@@ -161,16 +238,25 @@ public class Customer_App {
 				String nameTxt = name.getText();
 				String ageTxt = age.getText();
 				String phoneTxt = phone.getText();
-				String bTxt = birthday.getText();
-				// ì½¤ë³´ ë°•ìŠ¤ ë°›ëŠ” ë²•
+				// ÄŞº¸ ¹Ú½º ¹Ş´Â ¹ı
 				String genderTxt = gender.getSelectedItem().toString();
 				String noteTxt = note.getText();
 				
+				// µ¥ÀÌÅÍ ÀúÀå ÇÏ´Â °÷
+//				customer.createCustomer(nameTxt, phoneTxt, genderTxt, ageTxt, noteTxt);
+				JOptionPane.showMessageDialog(null, "µ¥ÀÌÅÍ ÀúÀåÀÌ ¿Ï·á µÇ¾ú½À´Ï´Ù.");
+				// µ¥ÀÌÅÍº£ÀÌ½º ÀúÀåÀÌ µÇ°í ÆĞ³ÎÀÌ ¾ø¾îÁü.
+				mainPanel.setVisible(false);
+				tablePanel.setVisible(true);
 			}
 			
 		});
+		
 		btnNewButton.setBounds(219, 322, 181, 33);
 		mainPanel.add(btnNewButton);
+		columnModels.getColumn(0).setPreferredWidth(50);
+		columnModels.getColumn(2).setPreferredWidth(30);
+		columnModels.getColumn(3).setPreferredWidth(20);
 		frame.getContentPane().add(welcomePanel);
 		
 		JLabel lblNewLabel = new JLabel("Log In");
@@ -206,9 +292,11 @@ public class Customer_App {
 		
 		btnLogIn = new JButton("");
 		btnLogIn.setIcon(new ImageIcon("C:\\Help_JAVA\\Lesson\\image\\loginbutton.jpg"));
-		// ë²„íŠ¼ì´ ëˆŒë ¸ì„ ë•Œ ì´ë¯¸ì§€ ë°”ë€ŒëŠ” íš¨ê³¼
+		// ¹öÆ°ÀÌ ´­·ÈÀ» ¶§ ÀÌ¹ÌÁö ¹Ù²î´Â È¿°ú
 		btnLogIn.setPressedIcon(new ImageIcon("C:\\Help_JAVA\\Lesson\\image\\loginbutton_click.jpg"));
 		btnLogIn.setBounds(197, 269, 231, 47);
+		
+		// ·Î±×ÀÎ ¹öÆ° À§Ä¡
 		btnLogIn.addActionListener(new ActionListener() {
 
 			@Override
@@ -221,13 +309,13 @@ public class Customer_App {
 				} else {
 					JOptionPane.showMessageDialog(null, "You failed to log in");
 				}
-				// ì•„ì´ë””ê°€ ë§ëŠ”ì§€ í™•ì¸ í•˜ëŠ” ì¡°ê±´
+				// ¾ÆÀÌµğ°¡ ¸Â´ÂÁö È®ÀÎ ÇÏ´Â Á¶°Ç
 //				if (id.getText().equals("Danny")) {
 //					System.out.println("Hey Danny");
 //				}
 				
-				// ë¹„ë°€ë²ˆí˜¸ê°€ helloê°€ ë§ëŠ”ì§€ í™•ì¸
-				// passwordëŠ” char[] ì´ë¼ì„œ Arrays eqauls ì—°ì‚°ì ì‚¬ìš©
+				// ºñ¹Ğ¹øÈ£°¡ hello°¡ ¸Â´ÂÁö È®ÀÎ
+				// password´Â char[] ÀÌ¶ó¼­ Arrays eqauls ¿¬»êÀÚ »ç¿ë
 //				if (Arrays.equals(password.getPassword(), "hello".toCharArray())) {
 //					System.out.println("You are right");
 //				}
@@ -237,41 +325,41 @@ public class Customer_App {
 		
 		
 		welcomePanel.add(btnLogIn);
-		// ë©”íŠœë°” ì¶”ê°€
+		// ¸Ş´º¹Ù Ãß°¡
 		frame.setJMenuBar(menuBar());
 		frame.setResizable(false);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 	
-	// ë©”ë‰´íƒ€ ë©”ì„œë“œ
+	// ¸Ş´ºÅ¸ ¸Ş¼­µå
 	public JMenuBar menuBar() {
-		// ë©”ë‰´ë°” ìƒì„±
+		// ¸Ş´º¹Ù »ı¼º
 		JMenuBar bar = new JMenuBar();
 		
-		// file ë©”ë‰´ ë§Œë“¤ê¸°
+		// file ¸Ş´º ¸¸µé±â
 		JMenu fileMenu = new JMenu("File");
-		// about ë©”ë‰´ ë§Œë“¤ê¸°
+		// about ¸Ş´º ¸¸µé±â
 		JMenu aboutMenu = new JMenu("About");
 		
-		// barì— fileMenu, aboutMenu ì¶”ê°€
+		// bar¿¡ fileMenu, aboutMenu Ãß°¡
 		bar.add(fileMenu);
 		bar.add(aboutMenu);
 		
-		// ì•„ì´í…œ ì¶”ê°€
+		// ¾ÆÀÌÅÛ Ãß°¡
 		JMenuItem openFile = new JMenuItem("Open");
 		JMenuItem exit = new JMenuItem("Exit");
 		
-		// fileMenuì— openFile, exit ì•„ì´í…œ ì¶”ê°€
+		// fileMenu¿¡ openFile, exit ¾ÆÀÌÅÛ Ãß°¡
 		fileMenu.add(openFile);
-		fileMenu.addSeparator();	// ì‚¬ì´ì— ì¤„ ìƒì„±;
+		fileMenu.addSeparator();	// »çÀÌ¿¡ ÁÙ »ı¼º;
 		fileMenu.add(exit);
 		
 		exit.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// í”„ë¡œê·¸ë¨ ì¢…ë£Œ;
+				// ÇÁ·Î±×·¥ Á¾·á;
 				System.exit(0);
 			}
 			
@@ -281,32 +369,32 @@ public class Customer_App {
 	}
 }
 
-//ë‚˜ë§Œì˜ JPanel ìƒì„±
+//³ª¸¸ÀÇ JPanel »ı¼º
 class ImagePanel extends JPanel {
-	// ì´ë¯¸ì§€ ë¶ˆëŸ¬ ì˜¤ê¸°
+	// ÀÌ¹ÌÁö ºÒ·¯ ¿À±â
 	private Image img;
 	
-	// ì´ë¯¸ì§€ ê°ì²´ ìƒì„±
+	// ÀÌ¹ÌÁö °´Ã¼ »ı¼º
 	public ImagePanel(Image img) {
 		this.img = img;
-		// ì´ë¯¸ì§€ ì‚¬ì´ì¦ˆ ìë™
+		// ÀÌ¹ÌÁö »çÀÌÁî ÀÚµ¿
 		setSize(new Dimension(img.getWidth(null), img.getHeight(null)));
 		setPreferredSize(new Dimension(img.getWidth(null), img.getHeight(null)));
-		// ë ˆì´ì•„ì›ƒ ìš°ë¦¬ê°€ ì›í•˜ëŠ” ìœ„ì¹˜ ê°€ëŠ¥
+		// ·¹ÀÌ¾Æ¿ô ¿ì¸®°¡ ¿øÇÏ´Â À§Ä¡ °¡´É
 		setLayout(null);
 	}
 	
 	public int getWidth() {
-		// ì´ë¯¸ì§€ì˜ ê°€ë¡œë„“ì´ë¥¼ ë°›ì„ ìˆ˜ ìˆìŒ
+		// ÀÌ¹ÌÁöÀÇ °¡·Î³ĞÀÌ¸¦ ¹ŞÀ» ¼ö ÀÖÀ½
 		return img.getWidth(null);
 	}
 	
 	public int getHeight() {
-		// ì´ë¯¸ì§€ì˜ ë†’ì´ë¥¼ ë°›ì„ ìˆ˜ ìˆìŒ
+		// ÀÌ¹ÌÁöÀÇ ³ôÀÌ¸¦ ¹ŞÀ» ¼ö ÀÖÀ½
 		return img.getHeight(null);
 	}
 	
-	// ë°±ê·¸ë¼ìš´ë“œ ì´ë¯¸ì§€ ë„£ëŠ” ë©”ì„œë“œ
+	// ¹é±×¶ó¿îµå ÀÌ¹ÌÁö ³Ö´Â ¸Ş¼­µå
 	public void paintComponent(Graphics g) {
 		g.drawImage(img, 0, 0, null);
 	}

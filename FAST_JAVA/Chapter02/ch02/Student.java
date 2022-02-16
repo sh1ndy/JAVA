@@ -1,4 +1,4 @@
-package ch01;
+package ch02;
 
 // public 접근제어자 : 공용으로 사용
 public class Student {

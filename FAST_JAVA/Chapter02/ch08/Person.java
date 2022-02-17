@@ -21,7 +21,7 @@ public class Person {
 	}
 	
 	String personShowInfo() {
-		String info = "Å°°¡" + height + "ÀÌ°í ¸ö¹«°Ô°¡" + weight + " Å³·ÎÀÎ " + gender + "ÀÌ ÀÖ½À´Ï´Ù. ÀÌ¸§Àº " + name + " ÀÌ°í ³ªÀÌ´Â " + age + "¼¼ÀÔ´Ï´Ù." ;
+		String info = "í‚¤ê°€" + height + "ì´ê³  ëª¸ë¬´ê²Œê°€" + weight + " í‚¬ë¡œì¸ " + gender + "ì´ ìˆìŠµë‹ˆë‹¤. ì´ë¦„ì€ " + name + " ì´ê³  ë‚˜ì´ëŠ” " + age + "ì„¸ì…ë‹ˆë‹¤." ;
 		return info;
 	}
 

@@ -25,13 +25,13 @@ public class Delivery {
 	}
 	
 	void deliveryInfo() {
-		System.out.println("ÁÖ¹® Á¢¼ö ¹øÈ£ : " + orderNumber);
-		System.out.println("ÁÖ¹® ÇÚµåÆù ¹øÈ£ : " + phoneNumber);
-		System.out.println("ÁÖ¹® Áı ÁÖ¼Ò : " + address);
-		System.out.println("ÁÖ¹® ³¯Â¥ : " + date);
-		System.out.println("ÁÖ¹® ½Ã°£ : " + time);
-		System.out.println("ÁÖ¹® °¡°İ : " + price);
-		System.out.println("¸Ş´º ¹øÈ£ : " + menuNumber);
+		System.out.println("ì£¼ë¬¸ ì ‘ìˆ˜ ë²ˆí˜¸ : " + orderNumber);
+		System.out.println("ì£¼ë¬¸ í•¸ë“œí° ë²ˆí˜¸ : " + phoneNumber);
+		System.out.println("ì£¼ë¬¸ ì§‘ ì£¼ì†Œ : " + address);
+		System.out.println("ì£¼ë¬¸ ë‚ ì§œ : " + date);
+		System.out.println("ì£¼ë¬¸ ì‹œê°„ : " + time);
+		System.out.println("ì£¼ë¬¸ ê°€ê²© : " + price);
+		System.out.println("ë©”ë‰´ ë²ˆí˜¸ : " + menuNumber);
 	}
 	
 }

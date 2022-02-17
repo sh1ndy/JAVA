@@ -4,7 +4,7 @@ public class PersonTest {
 
 	public static void main(String[] args) {
 
-		Person p = new Person(180, 78, "³²¼º", "Tomas", 37);
+		Person p = new Person(180, 78, "Â³Â²Â¼Âº", "Tomas", 37);
 		String pInfo = p.personShowInfo();
 		System.out.println(pInfo);
 		
